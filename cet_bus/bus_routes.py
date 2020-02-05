@@ -51,16 +51,13 @@ def mean(xs):
 
 def route_histo(shapes, bus_history):
   shapes_histo = {}
-  for bus_record in bus_history:
-    bus_point = Point(
-      float(bus_record["latitude"]),
-      float(bus_record["longitude"]))
+  for bus_point in bus_history:
     for shape_id, shape in shapes.items():
       closest_seg, distance = shape.closest_segment(bus_point, get_distance=True)
       if shape_id in shapes_histo:
         shapes_histo[shape_id].append(distance)
       else:
-        shapes_histo[shape_id] = []
+        shapes_histo[shape_id] = [distance]
   return [(shape, mean(distances)) for shape, distances in shapes_histo.items()]
 
 def passes(bus_history, bus_stop, route):

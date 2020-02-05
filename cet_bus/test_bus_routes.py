@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from geo import Point, Segment, Polyline
-from bus_routes import *
+from .geo import Point, Segment, Polyline
+from .bus_routes import *
 
 class TestBusRoutesMethods(unittest.TestCase):
   def test_enumate_shapes_has_correct_keys(self):
@@ -104,15 +104,15 @@ class TestBusRoutesMethods(unittest.TestCase):
     shapes = enumerate_shapes(trips_json, shapes_json)
 
     bus_history = [
-        {"latitude": 0, "longitude": 0},
-        {"latitude": 0, "longitude": 1},
-        {"latitude": 0, "longitude": 2},
-        {"latitude": 0, "longitude": 3}
+        Point(0, 0),
+        Point(0, 1),
+        Point(0, 2),
+        Point(0, 3)
       ]
     histo = route_histo(shapes, bus_history)
     self.assertEqual(min(histo, key=lambda x: x[1])[0][1], "route 1")
 
-    bus_history[3] = { "latitude": 1, "longitude": 2 }
+    bus_history[3] = Point(1, 2)
 
     histo = route_histo(shapes, bus_history)
     self.assertEqual(min(histo, key=lambda x: x[1])[0][1], "route 2")
