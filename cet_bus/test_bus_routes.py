@@ -125,18 +125,22 @@ class TestBusRoutesMethods(unittest.TestCase):
 
     stop = Point(0, 5)
 
+    # Buses can pass a stop going 'forward'
     bus_history = [ Point(0, 4), Point(0, 5), Point(0, 6) ]
     p = passes(bus_history, stop, route)
     self.assertTrue(p)
 
+    # Buses can pass a stop going 'backward'
     bus_history = [ Point(0, 6), Point(0, 5), Point(0, 4) ]
     p = passes(bus_history, stop, route)
     self.assertTrue(p)
 
+    # Not passing the stop should return false
     bus_history = [ Point(0, 4), Point(0, 3), Point(0, 2) ]
     p = passes(bus_history, stop, route)
     self.assertFalse(p)
 
+    # Not moving at all should return false
     bus_history = [ Point(0, 6), Point(0, 6), Point(0, 6) ]
     p = passes(bus_history, stop, route)
     self.assertFalse(p)
