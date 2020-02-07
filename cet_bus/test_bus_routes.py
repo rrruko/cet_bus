@@ -146,6 +146,31 @@ class TestBusRoutesMethods(unittest.TestCase):
     p = passes(bus_history, stop, route)
     self.assertFalse(p)
 
+  def test_passes_with_loop(self):
+    # Square route that loops back on itself at (0, 0)
+    route = Polyline([
+      Point(0, 0),
+      Point(0, 1),
+      Point(1, 1),
+      Point(1, 0),
+      Point(0, 0)
+    ])
+
+    # A stop at the far end of the loop
+    stop = Point(1, 1)
+
+    # A bus crossing the point at which the route loops
+    bus_history = [
+      Point(0.1,   0),
+      Point(  0,   0),
+      Point(  0, 0.1)
+    ]
+
+    # Going from the end of the route to the start
+    # shouldn't count as passing the stop at the far end
+    p = passes(bus_history, stop, route)
+    self.assertFalse(p)
+
   def test_passes_with_curvy_road_and_measurement_error(self):
     route = Polyline([
       Point(0, 0),
