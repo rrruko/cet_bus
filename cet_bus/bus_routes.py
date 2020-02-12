@@ -3,6 +3,7 @@ import operator
 import math
 
 from .geo import Segment, Point, Polyline
+from .haversine import haversine
 
 # Parse shape.json into a map where keys are shape ids and values are the
 # shapes represented as Polylines.
@@ -60,10 +61,13 @@ def route_histo(shapes, bus_history):
         shapes_histo[shape_id] = [distance]
   return [(shape, mean(distances)) for shape, distances in shapes_histo.items()]
 
-def passes(bus_history, bus_stop, route):
+def passes(bus_history, bus_stop, route, max_dist=None):
   sign = None
   for observation in bus_history:
     dist = route.distance_along(bus_stop) - route.distance_along(observation)
+    geodesic_dist = haversine(bus_stop, observation)
+    if max_dist and geodesic_dist > max_dist:
+      return False
     if sign is not None and sign != math.copysign(1, dist):
       return True
     sign = math.copysign(1, dist)

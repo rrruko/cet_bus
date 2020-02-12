@@ -3,6 +3,7 @@ import unittest
 
 from .geo import Point, Segment, Polyline
 from .bus_routes import *
+from .haversine import haversine
 
 class TestBusRoutesMethods(unittest.TestCase):
   def test_enumate_shapes_has_correct_keys(self):
@@ -170,10 +171,23 @@ class TestBusRoutesMethods(unittest.TestCase):
       Point(  0, 0.1)
     ]
 
+    # We're choosing a 'max_dist' radius such that it's
+    # big enough to include stops reasonably close to the bus,
+    # but not so big that it includes the stop at the far end.
+    # Normally we'd just pick something like "ten meters", but
+    # that doesn't work here, since we're using unrealistic
+    # lat/long coords for simplicity.
+    # ( (0,0) and (1,1) are hundreds of miles apart.)
+    max_dist = haversine(Point(0, 0), Point(0.1, 0))
+
     # Going from the end of the route to the start
     # shouldn't count as passing the stop at the far end
-    p = passes(bus_history, stop, route)
+    p = passes(bus_history, stop, route, max_dist = max_dist)
     self.assertFalse(p)
+
+    # But we can pass a stop at the point at which the route loops
+    p = passes(bus_history, Point(0,0), route, max_dist = max_dist)
+    self.assertTrue(p)
 
   def test_passes_with_curvy_road_and_measurement_error(self):
     route = Polyline([
